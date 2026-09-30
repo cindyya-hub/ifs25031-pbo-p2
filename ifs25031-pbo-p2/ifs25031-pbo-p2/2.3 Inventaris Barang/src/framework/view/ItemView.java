@@ -2,6 +2,7 @@ package framework.view;
 
 import adapter.presenter.ItemPresenter;
 import domain.entity.Item;
+import domain.entity.SortOption;
 import framework.util.InputUtil;
 import usecase.ItemUseCase;
 
@@ -156,16 +157,9 @@ public class ItemView {
             return;
         }
 
-        int option;
+        SortOption option = SortOption.fromMenuChoice(choice);
 
-        try {
-            option = Integer.parseInt(choice.trim());
-        } catch (NumberFormatException e) {
-            presenter.showInvalidSortChoice();
-            return;
-        }
-
-        if (option < 1 || option > 4) {
+        if (option == null) {
             presenter.showInvalidSortChoice();
             return;
         }
@@ -209,9 +203,20 @@ public class ItemView {
         }
     }
 
+    /**
+     * Mem-parsing jumlah stok dari string. Menampilkan pesan error dan
+     * mengembalikan null jika bukan angka atau tidak lebih dari 0.
+     */
     private Integer parseQuantity(String strQuantity) {
         try {
-            return Integer.parseInt(strQuantity.trim());
+            int quantity = Integer.parseInt(strQuantity.trim());
+
+            if (quantity <= 0) {
+                presenter.showInvalidQuantity();
+                return null;
+            }
+
+            return quantity;
         } catch (NumberFormatException e) {
             presenter.showInvalidQuantity();
             return null;

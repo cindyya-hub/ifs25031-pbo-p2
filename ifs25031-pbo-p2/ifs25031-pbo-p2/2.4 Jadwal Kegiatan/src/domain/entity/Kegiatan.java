@@ -1,11 +1,17 @@
 package domain.entity;
 
+import java.util.List;
+
 /**
  * Entity inti yang merepresentasikan satu kegiatan dalam jadwal.
  * Berada di layer domain — tidak bergantung pada layer lain dan bebas dari
  * urusan tampilan maupun penyimpanan.
  */
 public class Kegiatan {
+    /** Urutan hari dalam satu minggu, dipakai untuk pengurutan berdasarkan hari. */
+    private static final List<String> URUTAN_HARI = List.of(
+            "senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu");
+
     /** ID unik kegiatan, tidak boleh diubah setelah dibuat. */
     private final int id;
 
@@ -39,6 +45,12 @@ public class Kegiatan {
 
     public String getHari() {
         return hari;
+    }
+
+    /** Menentukan urutan hari (0 = Senin, ..., 6 = Minggu); hari tak dikenal diurutkan paling akhir. */
+    public int getHariIndex() {
+        int index = URUTAN_HARI.indexOf(hari.toLowerCase());
+        return index == -1 ? URUTAN_HARI.size() : index;
     }
 
     public void setHari(String hari) {

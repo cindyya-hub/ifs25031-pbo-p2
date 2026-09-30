@@ -1,9 +1,8 @@
 package usecase;
 
 import domain.entity.Contact;
+import domain.entity.SortOption;
 import domain.repository.IContactRepository;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -52,24 +51,10 @@ public class ContactUseCase {
                 .toList();
     }
 
-    /**
-     * Mengembalikan salinan daftar kontak yang sudah diurutkan, tanpa mengubah
-     * urutan data asli di penyimpanan.
-     *
-     * @param option 1 = Nama (A-Z), 2 = Nama (Z-A)
-     */
-    public List<Contact> sortContacts(int option) {
-        List<Contact> items = new ArrayList<>(contactRepository.findAll());
-
-        Comparator<Contact> comparator = switch (option) {
-            case 1 -> Comparator.comparing(Contact::getName, String.CASE_INSENSITIVE_ORDER);
-            case 2 -> Comparator.comparing(Contact::getName, String.CASE_INSENSITIVE_ORDER).reversed();
-            default -> null;
-        };
-
-        if (comparator != null) {
-            items.sort(comparator);
-        }
-        return items;
+    /** Mengurutkan kontak sesuai kriteria {@link SortOption} yang dipilih. */
+    public List<Contact> sortContacts(SortOption option) {
+        return contactRepository.findAll().stream()
+                .sorted(option.comparator())
+                .toList();
     }
 }

@@ -7,6 +7,8 @@ import domain.entity.TransactionType;
 import framework.util.InputUtil;
 import usecase.FinanceUseCase;
 
+import java.util.NoSuchElementException;
+
 /**
  * Tampilan konsol aplikasi catatan keuangan.
  * Menerima input user, memanggil use case, dan menampilkan hasil via presenter.
@@ -27,26 +29,30 @@ public class FinanceView {
     /** Menampilkan menu utama dan loop interaksi user. */
     public void show() {
         boolean running = true;
-        while (running) {
-            // Tampilkan daftar transaksi dan saldo terkini sebelum menu
-            presenter.showTransactions(financeUseCase.getAllTransactions(), financeUseCase.getBalance());
-            printMenu();
+        try {
+            while (running) {
+                // Tampilkan daftar transaksi dan saldo terkini sebelum menu
+                presenter.showTransactions(financeUseCase.getAllTransactions(), financeUseCase.getBalance());
+                printMenu();
 
-            String input = InputUtil.input("Pilih");
-            switch (input) {
-                case "1" -> addTransaction(TransactionType.INCOME, "Pemasukan");
-                case "2" -> addTransaction(TransactionType.EXPENSE, "Pengeluaran");
-                case "3" -> searchTransaction();
-                case "4" -> sortTransaction();
-                case "5" -> viewBalance();
-                case "6" -> removeTransaction();
-                case "x" -> running = false;
-                default -> presenter.showInvalidChoice();
-            }
+                String input = InputUtil.input("Pilih");
+                switch (input) {
+                    case "1" -> addTransaction(TransactionType.INCOME, "Pemasukan");
+                    case "2" -> addTransaction(TransactionType.EXPENSE, "Pengeluaran");
+                    case "3" -> searchTransaction();
+                    case "4" -> sortTransaction();
+                    case "5" -> viewBalance();
+                    case "6" -> removeTransaction();
+                    case "x" -> running = false;
+                    default -> presenter.showInvalidChoice();
+                }
 
-            if (running) {
-                System.out.println();
+                if (running) {
+                    System.out.println();
+                }
             }
+        } catch (NoSuchElementException e) {
+            // Input habis (EOF): hentikan program tanpa stack trace.
         }
     }
 

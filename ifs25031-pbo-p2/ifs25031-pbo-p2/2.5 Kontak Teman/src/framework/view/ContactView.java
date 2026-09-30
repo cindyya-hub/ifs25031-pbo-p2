@@ -2,8 +2,11 @@ package framework.view;
 
 import adapter.presenter.ContactPresenter;
 import domain.entity.Contact;
+import domain.entity.SortOption;
 import framework.util.InputUtil;
 import usecase.ContactUseCase;
+
+import java.util.NoSuchElementException;
 
 /**
  * Tampilan konsol aplikasi kontak teman.
@@ -25,24 +28,28 @@ public class ContactView {
     /** Menampilkan menu utama dan loop interaksi user. */
     public void show() {
         boolean running = true;
-        while (running) {
-            presenter.showContacts(contactUseCase.getAllContacts());
-            printMenu();
+        try {
+            while (running) {
+                presenter.showContacts(contactUseCase.getAllContacts());
+                printMenu();
 
-            String input = InputUtil.input("Pilih");
-            switch (input) {
-                case "1" -> addContact();
-                case "2" -> updateContact();
-                case "3" -> searchContact();
-                case "4" -> sortContact();
-                case "5" -> removeContact();
-                case "x" -> running = false;
-                default -> presenter.showInvalidChoice();
-            }
+                String input = InputUtil.input("Pilih");
+                switch (input) {
+                    case "1" -> addContact();
+                    case "2" -> updateContact();
+                    case "3" -> searchContact();
+                    case "4" -> sortContact();
+                    case "5" -> removeContact();
+                    case "x" -> running = false;
+                    default -> presenter.showInvalidChoice();
+                }
 
-            if (running) {
-                System.out.println();
+                if (running) {
+                    System.out.println();
+                }
             }
+        } catch (NoSuchElementException e) {
+            // Input habis (EOF): hentikan program tanpa stack trace.
         }
     }
 
@@ -125,15 +132,8 @@ public class ContactView {
             return;
         }
 
-        int option;
-        try {
-            option = Integer.parseInt(choice.trim());
-        } catch (NumberFormatException e) {
-            presenter.showInvalidSortChoice();
-            return;
-        }
-
-        if (option < 1 || option > 2) {
+        SortOption option = SortOption.fromMenuChoice(choice);
+        if (option == null) {
             presenter.showInvalidSortChoice();
             return;
         }

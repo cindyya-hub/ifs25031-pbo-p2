@@ -2,6 +2,7 @@ package framework.view;
 
 import adapter.presenter.ActivityPresenter;
 import domain.entity.Kegiatan;
+import domain.entity.SortOption;
 import framework.util.InputUtil;
 import usecase.ActivityUseCase;
 
@@ -140,15 +141,8 @@ public class ActivityView {
             return;
         }
 
-        int option;
-        try {
-            option = Integer.parseInt(choice.trim());
-        } catch (NumberFormatException e) {
-            presenter.showInvalidSortChoice();
-            return;
-        }
-
-        if (option < 1 || option > 4) {
+        SortOption option = SortOption.fromMenuChoice(choice);
+        if (option == null) {
             presenter.showInvalidSortChoice();
             return;
         }

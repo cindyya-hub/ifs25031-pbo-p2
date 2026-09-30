@@ -1,10 +1,9 @@
 package usecase;
 
 import domain.entity.Item;
+import domain.entity.SortOption;
 import domain.repository.IItemRepository;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,46 +75,11 @@ public class ItemUseCase {
                 .toList();
     }
 
-    public List<Item> sortItems(
-            int option
-    ) {
-        List<Item> items =
-                new ArrayList<>(
-                        itemRepository.findAll()
-                );
-
-        Comparator<Item> comparator =
-                switch (option) {
-
-                    case 1 ->
-                        Comparator.comparing(
-                            Item::getName,
-                            String.CASE_INSENSITIVE_ORDER
-                        );
-
-                    case 2 ->
-                        Comparator.comparing(
-                            Item::getName,
-                            String.CASE_INSENSITIVE_ORDER
-                        ).reversed();
-
-                    case 3 ->
-                        Comparator.comparingInt(
-                            Item::getQuantity
-                        );
-
-                    case 4 ->
-                        Comparator.comparingInt(
-                            Item::getQuantity
-                        ).reversed();
-
-                    default -> null;
-                };
-
-        if (comparator != null) {
-            items.sort(comparator);
-        }
-
-        return items;
+    /** Mengurutkan barang sesuai kriteria {@link SortOption} yang dipilih. */
+    public List<Item> sortItems(SortOption option) {
+        return itemRepository.findAll()
+                .stream()
+                .sorted(option.comparator())
+                .toList();
     }
 }
